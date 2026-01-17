@@ -73,7 +73,7 @@ map("i", "<C-z>", function()
   localnest_fim.accept()
 end, vim.tbl_extend("force", opts, { desc = "LocalNest: Accept FIM" }))
 
-map("i", "<C-e>", function()
+map("i", "<C-d>", function()
   localnest_fim.dismiss()
 end, vim.tbl_extend("force", opts, { desc = "LocalNest: Dismiss FIM" }))
 
