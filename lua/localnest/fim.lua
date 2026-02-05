@@ -139,24 +139,25 @@ function M.complete(prefix, suffix, callback)
     }
 
     http.post(url, body, function(err, response)
-
-        vim.notify("Text Suggestion Response: " .. response.content, vim.log.levels.INFO)
         if err then
-            vim.notify("FIM error: " .. err, vim.log.levels.ERROR)
+            vim.notify("FIM error: " .. tostring(err), vim.log.levels.ERROR)
             callback(nil)
             return
         end
 
         if type(response) ~= "table" then
-            vim.notify("FIM error: invalid response", vim.log.levels.WARN)
+            vim.notify("FIM error: invalid response type: " .. type(response), vim.log.levels.WARN)
             callback(nil)
             return
         end
 
         local text = response.content
+        if text then
+            vim.notify("Text Suggestion Received", vim.log.levels.INFO)
+        end
 
         if not text or text == "" then
-            vim.notify("FIM error: empty response", vim.log.levels.WARN)
+            vim.notify("FIM error: empty or missing content", vim.log.levels.WARN)
             callback(nil)
             return
         end

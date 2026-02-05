@@ -29,10 +29,11 @@ function M.post(url, body, callback, opts)
                 return
             end
             if not stream then
-                full_response = data
+                full_response = full_response .. table.concat(data, "\n")
+                return
             end
-            -- jobstart data is a list of strings
-            -- The last string in the list is what's after the last newline
+
+            -- Streaming logic
             for i, chunk in ipairs(data) do
                 buffer = buffer .. chunk
                 if i < #data then
@@ -45,11 +46,7 @@ function M.post(url, body, callback, opts)
                         else
                             local ok, decoded = pcall(vim.json.decode, json_str)
                             if ok then
-                                if stream then
-                                    vim.schedule(function() callback(nil, decoded) end)
-                                else
-                                    full_response = full_response .. json_str
-                                end
+                                vim.schedule(function() callback(nil, decoded) end)
                             end
                         end
                     end
@@ -67,9 +64,11 @@ function M.post(url, body, callback, opts)
                         vim.schedule(function() callback(nil, decoded) end)
                     else
                         vim.notify("Error Decoding Non Stream Result: " .. full_response, vim.log.levels.WARN)
+                        vim.schedule(function() callback("Failed to decode JSON: " .. full_response, nil) end)
                     end
                 else
                     vim.notify("Error, Empty full_response", vim.log.levels.WARN)
+                    vim.schedule(function() callback("Empty response received", nil) end)
                 end
             else
                 -- Signal end of stream
