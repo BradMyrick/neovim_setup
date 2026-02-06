@@ -1,4 +1,9 @@
 # LocalNest.nvim 🦉
+<p align="center">
+  <img src="https://img.shields.io/badge/Neovim-%2357A143.svg?style=for-the-badge&logo=neovim&logoColor=white" alt="Neovim"  />&nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Lua-%232C2D72.svg?style=for-the-badge&logo=lua&logoColor=white" alt="Lua" />&nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Local--first_Ai-infra-0f766e?style=for-the-badge&logo=sparkles&logoColor=white" alt="Local-first AI" />
+</p>
 
 LocalNest.nvim is a powerful, local-first AI coding assistant for Neovim. It brings state-of-the-art Large Language Model capabilities directly to your editor by connecting to your own local AI infrastructure.
 
@@ -121,4 +126,13 @@ Full IDE capabilities for:
 LocalNest.nvim is built with privacy and performance in mind. No code leaves your local environment, keeping your proprietary logic safe while giving you the speed and power of modern LLMs.
 
 ---
-Part of the [LocalNest](https://github.com/LocalNest) project.
+<div align="center">
+
+[![Follow on X](https://img.shields.io/badge/Follow-@kodr__pro-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/kodr_pro)
+[![Live Coding](https://img.shields.io/badge/Live%20Coding-twitch.tv%2Fkodr__eth-9146FF?style=for-the-badge&logo=twitch&logoColor=white)](https://twitch.tv/kodr_eth)
+[![Portfolio](https://img.shields.io/badge/Portfolio-kodr.pro-4f46e5?style=for-the-badge&logo=firefoxbrowser&logoColor=white)](https://www.kodr.pro)
+
+</div>
+
+
+---
