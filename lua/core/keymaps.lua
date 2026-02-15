@@ -34,11 +34,12 @@ map('n', '<leader>gc', function() vim.cmd.Git('commit') end, opts)
 map('n', '<leader>q', vim.cmd.bdelete, opts)
 map('n', '<leader>n', vim.cmd.enew, opts)
 
--- Window navigation
-map('n', '<C-h>', '<C-w>h')
-map('n', '<C-j>', '<C-w>j')
-map('n', '<C-k>', '<C-w>k')
-map('n', '<C-l>', '<C-w>l')
+-- Buffer Navigation
+map('n', '<S-h>', '<cmd>BufferLineCyclePrev<CR>', { desc = "Prev Buffer" })
+map('n', '<S-l>', '<cmd>BufferLineCycleNext<CR>', { desc = "Next Buffer" })
+map('n', '<leader>bp', '<cmd>BufferLineCyclePrev<CR>', { desc = "Prev Buffer" })
+map('n', '<leader>bn', '<cmd>BufferLineCycleNext<CR>', { desc = "Next Buffer" })
+map('n', '<leader>bc', '<cmd>BufferLinePickClose<CR>', { desc = "Pick Buffer to Close" })
 
 -- Custom Copy Paste
 map("v", "<C-c>", '"+y')             -- Copy in visual mode

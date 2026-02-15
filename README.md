@@ -81,6 +81,15 @@ LocalNest uses `which-key` for easy discovery.
 | `<leader>to` | Show Test Output |
 | `<leader>o` | Toggle Code Outline |
 
+### Buffer Navigation
+| Shortcut | Action |
+| --- | --- |
+| `<S-h>` | Previous Buffer (Tab) |
+| `<S-l>` | Next Buffer (Tab) |
+| `<leader>bp` | Previous Buffer |
+| `<leader>bn` | Next Buffer |
+| `<leader>bc` | Close Buffer |
+
 ## Configuration
 
 You can tune the AI's behavior in your `setup` function:
@@ -126,7 +135,7 @@ Full IDE capabilities for:
   - `nvim-surround` & `Comment.nvim`: Advanced text manipulation.
 
 ### Quality of Life Tweaks
-- **Native Navigation**: Seamless window jumping with `<C-h/j/k/l>`.
+- **Buffer Navigation**: Fast tab switching with `<Shift-h/l>`.
 - **System Clipboard**: Unified copy/paste with `Ctrl-c` and `Ctrl-v`.
 - **Smooth Interaction**: Hardware-accelerated scrolling with `neoscroll.nvim`.
 - **Persistent History**: Global undo history saved across restarts.
