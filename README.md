@@ -49,7 +49,7 @@ LocalNest uses `which-key` for easy discovery.
 | Shortcut | Action |
 | --- | --- |
 | `Auto` | Suggestions appear after a short pause |
-| `<C-x>` | Manually trigger completion |
+| `<C-x>` | **Toggle** FIM on/off |
 | `<C-z>` | **Accept** suggestion |
 | `<C-d>` | **Dismiss** suggestion |
 
@@ -109,7 +109,7 @@ LocalNest is more than just an AI plugin; it's a fully-equipped IDE configured f
 Full IDE capabilities for:
 - **Rust** (via `rust-tools.nvim`)
 - **Go** (via `go.nvim`)
-- **Python**, **TypeScript/JS**, **Lua**, **Bash**, **YAML**, **JSON**, **Docker*e*
+- **Python**, **TypeScript/JS**, **Lua**, **Bash**, **YAML**, **JSON**, **Docker**
 - **Cap'n Proto** (dedicated support)
 
 ### Core Stack

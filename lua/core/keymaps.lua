@@ -66,8 +66,8 @@ local localnest_fim  = require("localnest.fim")
 
 -- FIM: inline completion (Insert mode)
 map("i", "<C-x>", function()
-  localnest_fim.trigger()
-end, vim.tbl_extend("force", opts, { desc = "LocalNest: FIM completion" }))
+  localnest_fim.toggle()
+end, vim.tbl_extend("force", opts, { desc = "LocalNest: Toggle FIM" }))
 
 map("i", "<C-z>", function()
   localnest_fim.accept()
