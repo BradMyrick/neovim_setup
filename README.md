@@ -11,17 +11,17 @@ This plugin is the IDE/Coding Assistant component of the [LocalNest](https://git
 
 ## Features
 
-- **Fill-In-The-Middle (FIM)**: Real-time, ghost-text code completions that understand the context before and after your cursor.
-- **Multi-line Suggestions**: High-quality completions for entire functions and complex blocks.
-- **Interactive Chat**: A sleek, streaming floating chat window for deep technical discussions.
+- **Fill-In-The-Middle (FIM)**: Dual-mode completions (Auto/Manual) that understand context before and after your cursor.
+- **Dynamic Ghost Text**: Sleek, non-intrusive suggestions with custom high-priority highlighting (`LocalNestFimGhost`) that won't conflict with other plugins.
+- **Stateful Interactive Chat**: A persistent, session-aware chat window. Ask follow-up questions and maintain deep context throughout your coding session.
+- **Interactive Chat Controls**: In the chat buffer, use `r` to respond/continue the thread and `q` to instantly close the window.
 - **Slash Commands**: Instant AI actions for selected code:
-  - `/explain`: Get a detailed breakdown of complex logic.
-  - `/fix`: Identify and resolve bugs and edge cases.
-  - `/refactor`: Improve readability and performance.
-  - `/test`: Automatically generate comprehensive unit tests.
-- **Context-Aware**: Intelligently gathers buffer content and project context for more accurate results.
-- **Tool Integration**: Seamlessly connects with `n8n` for advanced capabilities.
-- **Optimized for Qwen 2.5**: Pre-tuned for the Qwen 2.5 Coder series (7B recommended).
+  - `/explain`: Get a concise breakdown of MUST-KNOW logic and performance.
+  - `/fix`: Identify and resolve bugs with immediate corrected code blocks.
+  - `/refactor`: Improve readability and efficiency with specific change logs.
+  - `/test`: Generate comprehensive, edge-case unit tests.
+- **Context-Aware**: Intelligently gathers buffer content and project context, now optimized with industry-standard PSM FIM formatting.
+- **Optimized for Qwen 2.5 & Qwen 2.5 Coder**: Pre-tuned for elite local LLMs.
 
 ## Installation
 
@@ -48,7 +48,8 @@ LocalNest uses `which-key` for easy discovery.
 ### Fill-In-The-Middle (Insert Mode)
 | Shortcut | Action |
 | --- | --- |
-| `Auto` | Suggestions appear after a short pause |
+| `Auto` | Suggestions appear after a pause (Auto-Mode) |
+| `:LocalNestFimManual` | Trigger full FIM block generation (Manual-Mode) |
 | `<C-x>` | **Toggle** FIM on/off |
 | `<C-z>` | **Accept** suggestion |
 | `<C-d>` | **Dismiss** suggestion |
@@ -64,10 +65,13 @@ LocalNest uses `which-key` for easy discovery.
 ### AI Chat (`<C-o>`)
 | Shortcut | Action |
 | --- | --- |
-| `<C-o>c` | Open Chat |
+| `<C-o>c` | Open Chat (Stateful History) |
 | `<C-o>x` | Ask about Selection |
 | `<C-o>f` | Analyze Full File |
 | `<C-o>t` | Ask via `@this` block |
+| `r` (in buffer) | **Respond** to the Assistant |
+| `q` (in buffer) | **Close** Chat Window |
+| `:LocalNestChatClear` | Reset Conversation History |
 
 ### Engineering Tools (`<leader>`)
 | Shortcut | Action |
@@ -104,8 +108,9 @@ require('localnest').setup({
         top_p = 0.9,
     },
     chat = {
-        max_tokens = 512,
+        max_tokens = 2048,
         temperature = 0.7,
+        system_prompt = "You are a concise coding assistant...",
     }
 })
 ```
@@ -144,7 +149,7 @@ Full IDE capabilities for:
 ## Requirements
 
 - Neovim 0.10+
-- [llama-server](https://github.com/ggerganov/llama.cpp) (running with `/infill` and `/completion` endpoints)
+- [llama-server](https://github.com/ggerganov/llama.cpp) (supporting `/infill` and `/v1/chat/completions`)
 - `curl` installed on your system
 
 ## 🦉 About LocalNest

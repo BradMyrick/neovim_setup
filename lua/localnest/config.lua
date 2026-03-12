@@ -27,9 +27,9 @@ local defaults = {
 
   chat = {
     enabled = true,
-    max_tokens = 512,
+    max_tokens = 2048,
     temperature = 0.7,
-    system_prompt = "You are a helpful coding assistant. Help with code generation, debugging, refactoring, and explanation. Be precise and concise.",
+    system_prompt = "You are a concise coding assistant. Provide precise, brief explanations. Avoid repeating context or meta-talk. If a response is cut off, continue exactly where you left off without preamble.",
     show_tool_calls = true,
   },
 
