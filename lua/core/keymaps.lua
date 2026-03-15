@@ -64,6 +64,7 @@ map('n', '<leader>0', vim.diagnostic.open_float, { desc = 'Show diagnostic under
 -- LocalNest (AI) keymaps
 local localnest_chat = require("localnest.chat")
 local localnest_fim  = require("localnest.fim")
+local localnest_backend = require("localnest.backend")
 
 -- FIM: inline completion (Insert mode)
 map("i", "<C-x>", function()
@@ -83,6 +84,18 @@ local wk = require("which-key")
 
 wk.add({
   { "<leader>a", group = "AI (LocalNest)" },
+  -- Backend Switching
+  { "<leader>ab", function()
+    vim.ui.select(
+      { "local", "deepseek" },
+      { prompt = "Select AI Backend (Current: " .. localnest_backend.get_current_backend_name() .. "):" },
+      function(choice)
+        if choice then
+          localnest_backend.switch_backend(choice)
+        end
+      end
+    )
+  end, desc = "Switch Backend" },
   -- Slash Commands
   { "<leader>ae", function() localnest_chat.slash("explain") end, desc = "Explain Code" },
   { "<leader>af", function() localnest_chat.slash("fix") end, desc = "Fix Code" },

@@ -2,6 +2,7 @@
 local api    = vim.api
 local config = require("localnest.config")
 local http   = require("localnest.http")
+local backend = require("localnest.backend")
 
 local M      = {}
 
@@ -211,39 +212,13 @@ end
 
 function M.complete(prefix, suffix, callback, opts)
     opts = opts or {}
-    local url = string.format(
-        "http://%s:%d/infill",
-        config.get("llama_server.host"),
-        config.get("llama_server.port")
-    )
-
-    local body = {
-        prompt         = "",
-        input_prefix   = prefix or "",
-        input_suffix   = suffix or "",
-        n_predict      = opts.max_tokens or config.get("fim.max_tokens") or 64,
-        temperature    = config.get("fim.temperature") or 0.0,
-        top_p          = config.get("fim.top_p") or 0.9,
-        top_k          = config.get("fim.top_k") or 40,
-        repeat_penalty = config.get("fim.repeat_penalty") or 1.1,
-        stop           = config.get("fim.stop_sequences") or { "```" },
-        model          = config.get("models.fim"),
-    }
-
-    http.post(url, body, function(err, response)
+    
+    backend.fim_complete(prefix, suffix, function(err, text)
         if err then
             vim.notify("FIM error: " .. tostring(err), vim.log.levels.ERROR)
             callback(nil)
             return
         end
-
-        if type(response) ~= "table" then
-            vim.notify("FIM error: invalid response type: " .. type(response), vim.log.levels.WARN)
-            callback(nil)
-            return
-        end
-
-        local text = response.content
 
         if type(text) ~= "string" or text == "" then
             -- Silent failure for auto-complete to avoid spamming
@@ -254,7 +229,7 @@ function M.complete(prefix, suffix, callback, opts)
             return
         end
         callback(text)
-    end)
+    end, opts)
 end
 
 local timer = vim.loop.new_timer()

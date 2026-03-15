@@ -5,6 +5,7 @@ local M       = {}
 
 local config  = require("localnest.config")
 local http    = require("localnest.http")
+local backend = require("localnest.backend")
 local prompts = require("localnest.prompts")
 local context = require("localnest.context")
 local tools   = require("localnest.tools")
@@ -128,36 +129,30 @@ local function start_loading()
     end))
 end
 
--- Call llama-server with streaming using the /v1/chat/completions endpoint
-local function llama_chat_stream(messages, callback)
-    local url = string.format(
-        "http://%s:%d/v1/chat/completions",
-        config.get("llama_server.host"),
-        config.get("llama_server.port")
-    )
-
-    local body = {
-        messages = messages,
-        max_tokens = config.get("chat.max_tokens") or 512,
-        temperature = config.get("chat.temperature") or 0.7,
-        model = config.get("models.chat"),
-        stream = true,
-    }
-
+-- Backend-agnostic chat streaming
+local function backend_chat_stream(messages, callback)
     local first_chunk = true
     local full_response = ""
+    local error_shown = false
 
-    http.post(url, body, function(err, chunk)
+    backend.chat_complete(messages, function(err, chunk)
         if err then
-            stop_loading()
-            append_to_chat("\n[Error: " .. err .. "]")
+            if not error_shown then
+                stop_loading()
+                error_shown = true
+                -- Show error in chat
+                append_to_chat("\n\n**[Error]**: " .. err .. "\n")
+                vim.notify("Chat error: " .. err, vim.log.levels.ERROR)
+            end
             return
         end
 
         if not chunk then
             -- Stream finished
             stop_loading()
-            if callback then callback(full_response) end
+            if callback and full_response ~= "" then
+                callback(full_response)
+            end
             return
         end
 
@@ -183,15 +178,15 @@ local function llama_chat_stream(messages, callback)
             content = chunk.message.content -- Ollama Chat
         end
 
-        if type(content) == "string" then
+        if type(content) == "string" and content ~= "" then
             full_response = full_response .. content
             append_to_chat(content)
         end
-    end)
+    end, { stream = true })
 end
 
 function M.ask(question)
-    open_floating_window("LocalNest AI")
+    open_floating_window("LocalNest AI (" .. backend.get_current_backend_name() .. ")")
     
     -- If this isn't the first message, add a newline
     if #M.history > 0 then
@@ -210,10 +205,27 @@ function M.ask(question)
         table.insert(messages, msg)
     end
 
-    llama_chat_stream(messages, function(full_response)
+    backend_chat_stream(messages, function(full_response)
         if full_response and full_response ~= "" then
+            -- Check if response seems truncated
+            local is_truncated = false
+            local last_char = full_response:sub(-1)
+            local last_sentence = full_response:match("[^.!?]+[.!?]%s*$")
+            
+            -- Common indicators of truncation
+            if not last_sentence or 
+               full_response:match("```[^`]*$") or  -- Unclosed code block
+               (full_response:match("%[.*%]$") and not full_response:match("%]%s*$")) or  -- Unclosed bracket
+               full_response:match("%(%s*[^%)]*$") then  -- Unclosed parenthesis
+                is_truncated = true
+            end
+            
             table.insert(M.history, { role = "assistant", content = full_response })
             append_to_chat("\n") -- Ensure final response has a newline
+            
+            if is_truncated then
+                append_to_chat("\n**[Note]**: Response may be truncated due to token limits.\n")
+            end
         end
     end)
 end

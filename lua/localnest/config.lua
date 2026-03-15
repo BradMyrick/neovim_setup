@@ -3,6 +3,22 @@
 local M = {}
 
 local defaults = {
+  -- Backend configuration
+  backend = {
+    type = "local",  -- "local" or "deepseek"
+    deepseek = {
+      api_key_env = "DEEPSEEK_API_KEY",
+      models = {
+        chat = "deepseek-chat",
+        fim = "deepseek-coder",
+        reasoning = "deepseek-reasoner",
+      },
+      base_url = "https://api.deepseek.com",
+      beta_base_url = "https://api.deepseek.com/beta",
+      timeout = 30000,
+    },
+  },
+
   llama_server = {
     host = "localnest",
     port = 8888,
@@ -20,17 +36,30 @@ local defaults = {
     stop_sequences = { "```", "\n\n" },
     -- Constraints
     only_in_code = true,
-    code_filetypes = { "lua", "rust", "python", "go", "typescript" },
+    code_filetypes = { "lua", "rust", "python", "go", "typescript", "javascript", "java", "c", "cpp", "csharp", "php", "ruby", "swift", "kotlin", "scala" },
     min_prefix_len = 3,
     reject_short_results = true,
+    -- DeepSeek specific FIM settings
+    deepseek_fim = {
+      max_tokens = 256,
+      temperature = 0.1,
+      top_p = 0.95,
+    },
   },
 
   chat = {
     enabled = true,
-    max_tokens = 2048,
+    max_tokens = 4096,
     temperature = 0.7,
-    system_prompt = "You are a concise coding assistant. Provide precise, brief explanations. Avoid repeating context or meta-talk. If a response is cut off, continue exactly where you left off without preamble.",
+    system_prompt = require("localnest.prompts").chat_system,
     show_tool_calls = true,
+    -- DeepSeek specific chat settings
+    deepseek_chat = {
+      max_tokens = 8192,
+      temperature = 0.7,
+      frequency_penalty = 0.1,  -- Slight frequency penalty to reduce repetition
+      presence_penalty = 0.1,   -- Slight presence penalty for more diverse responses
+    },
   },
 
   tools = {

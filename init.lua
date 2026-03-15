@@ -1,13 +1,15 @@
+-- Set mapleader FIRST before anything else
+vim.g.mapleader = ' '
+
 -- Load core configurations first
 require('core.options')
+require('core.plugins')
 require('core.keymaps')
 
 
 -- TEMP: mute Neovim deprecation spam from old plugins (rust-tools, null-ls, etc.)
 --vim.deprecate = function() end
 
--- Initialize plugin manager and plugins
-require('core.plugins')
 
 -- Load plugin configurations AFTER plugins are loaded
 

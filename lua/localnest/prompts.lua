@@ -3,57 +3,81 @@
 
 local M = {}
 
-M.chat_system = [[You are LocalNest, an elite, hyper-concise Neovim coding assistant.
+M.chat_system = [[You are LocalNest, an elite Neovim coding assistant.
 Your primary directives:
-- Output only valid, production-ready code.
-- Omit conversational filler (e.g., "Here is the code", "Let me know if you need help").
-- When asked to explain, focus strictly on core logic, edge cases, and performance.
-- Use standard markdown for code blocks with the correct language tags.
-- If a conversation is continued after a cutoff, resume exactly where you left off.
+- Be concise but thorough. Provide complete answers without unnecessary filler.
+- When explaining code, focus on core logic, edge cases, and performance implications.
+- For code generation, output production-ready, idiomatic code.
+- Use markdown code blocks with correct language tags.
+- If interrupted, continue exactly where you left off without repetition.
+- Structure longer responses with clear sections but avoid markdown headers unless necessary.
 
-If tool execution is required, output ONLY the following format and nothing else:
-<tool_call>
-{"name": "tool_name", "arguments": {"arg1": "val1"}}
-</tool_call>]]
+Response guidelines:
+1. Keep explanations focused and to the point
+2. Code examples should be complete but minimal
+3. Balance brevity with completeness
+4. Prioritize actionable information]]
 
-M.explain_template = [[Explain this code with maximum brevity. Highlight MUST-KNOW logic and potential bugs/bottlenecks.
+M.explain_template = [[Explain this code concisely but completely. Cover:
+1. What the code does (core functionality)
+2. Key algorithms/data structures used
+3. Potential edge cases or issues
+4. Performance considerations
+
+Be thorough but avoid unnecessary detail. If the code is complex, break it down logically.
 
 ```%s
 %s
 ```]]
 
-M.fix_template = [[Identify the bugs in the following code and provide the corrected version. 
-Return ONLY the fixed code block and a 1-2 sentence explanation of the fix.
+M.fix_template = [[Analyze and fix this code. Provide:
+1. A brief description of the issue(s)
+2. The corrected code
+3. Explanation of the fix (1-2 sentences)
+
+Format your response clearly but concisely.
 
 ```%s
 %s
 ```
 
-Context/Error:
+Additional context (if any):
 %s]]
 
-M.refactor_template = [[Refactor the following code for maximum readability, efficiency, and idiomatic practices.
-Return ONLY the refactored code block and a bulleted list of the specific changes made.
+M.refactor_template = [[Refactor this code for better readability, efficiency, and maintainability.
+Provide:
+1. The refactored code
+2. A concise list of improvements made
+3. Brief rationale for key changes
+
+Focus on practical improvements that matter.
 
 ```%s
 %s
 ```]]
 
-M.unit_test_template = [[Generate concise, comprehensive unit tests covering standard and edge cases for the following code.
-Return ONLY the test code block.
+M.unit_test_template = [[Generate comprehensive unit tests for this code.
+Include:
+1. Tests for normal cases
+2. Tests for edge cases
+3. Tests for error conditions
+
+Make tests concise but thorough. Include necessary setup/teardown.
 
 ```%s
 %s
 ```]]
 
 M.file_context_template = [[
-Here is the full file context:
+File context:
 
 ```%s
 %s
 ```
 
-Question: %s]]
+Question: %s
+
+Please provide a complete but concise answer.]]
 
 --- Build a chat prompt with system and messages
 function M.build_chat_prompt(system_prompt, messages)

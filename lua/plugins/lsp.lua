@@ -63,11 +63,24 @@ local function root_with(markers)
 end
 
 ---------------------------------------------------------------
--- Rust: format on save
+-- Format on save for supported languages
 ---------------------------------------------------------------
 
+-- Rust: format on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.rs",
+  callback = function(args)
+    vim.lsp.buf.format({
+      bufnr = args.buf,
+      async = false,
+      timeout_ms = 1000,
+    })
+  end,
+})
+
+-- JSON: format on save
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.json", "*.jsonc" },
   callback = function(args)
     vim.lsp.buf.format({
       bufnr = args.buf,

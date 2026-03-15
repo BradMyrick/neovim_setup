@@ -11,21 +11,25 @@ function M.post(url, body, callback, opts)
     opts = opts or {}
     local timeout = opts.timeout or 30000
     local stream = body.stream or false
+    local headers = opts.headers or { "Content-Type: application/json" }
 
     local buffer = ""
     local full_response = ""
 
-    local job_id = vim.fn.jobstart({
-        "curl", "-sN",
-        "-X", "POST",
-        url,
-        "-H", "Content-Type: application/json",
-        "-d", "@-",
-        "--max-time", tostring(timeout / 1000)
-    }, {
+    -- Build curl command with headers
+    local curl_cmd = { "curl", "-sN", "-X", "POST", url }
+    for _, header in ipairs(headers) do
+        table.insert(curl_cmd, "-H")
+        table.insert(curl_cmd, header)
+    end
+    table.insert(curl_cmd, "-d")
+    table.insert(curl_cmd, "@-")
+    table.insert(curl_cmd, "--max-time")
+    table.insert(curl_cmd, tostring(timeout / 1000))
+
+    local job_id = vim.fn.jobstart(curl_cmd, {
         on_stdout = function(_, data)
             if not data then
-                vim.notify("HTTP Warning: No data received", vim.log.levels.WARN)
                 return
             end
             if not stream then
@@ -54,18 +58,31 @@ function M.post(url, body, callback, opts)
                 end
             end
         end,
+        on_stderr = function(_, data)
+            if data and #data > 0 then
+                local error_msg = table.concat(data, "\n")
+                -- Sanitize any API keys in error messages
+                error_msg = error_msg:gsub("Bearer%s+[%w%-_]+", "Bearer [REDACTED]")
+                vim.schedule(function() callback("curl error: " .. error_msg, nil) end)
+            end
+        end,
         on_exit = function(_, exit_code)
+            if exit_code ~= 0 then
+                vim.schedule(function() callback("curl exited with code: " .. exit_code, nil) end)
+                return
+            end
+            
             if not stream then
                 if full_response ~= "" then
                     local ok, decoded = pcall(vim.json.decode, full_response)
                     if ok then
                         vim.schedule(function() callback(nil, decoded) end)
                     else
-                        vim.notify("Error Decoding Non Stream Result: " .. full_response, vim.log.levels.WARN)
-                        vim.schedule(function() callback("Failed to decode JSON: " .. full_response, nil) end)
+                        -- Sanitize error messages to avoid leaking API keys
+                        local sanitized_response = full_response:gsub("Bearer%s+[%w%-_]+", "Bearer [REDACTED]")
+                        vim.schedule(function() callback("Failed to decode JSON response: " .. sanitized_response, nil) end)
                     end
                 else
-                    vim.notify("Error, Empty full_response", vim.log.levels.WARN)
                     vim.schedule(function() callback("Empty response received", nil) end)
                 end
             else

@@ -3,7 +3,7 @@ require('nvim-treesitter').setup {
     sync_install = false,
     auto_install = false,
     ignore_install = {},
-    ensure_installed = {'lua', 'python', 'go', 'rust', 'capnp'}, -- Add languages
+    ensure_installed = {'lua', 'python', 'go', 'rust', 'capnp', 'json', 'jsonc'}, -- Add languages
     highlight = {enable = true},
     indent = {enable = true},
   }
