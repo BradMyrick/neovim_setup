@@ -63,7 +63,10 @@ function M.post(url, body, callback, opts)
                 local error_msg = table.concat(data, "\n")
                 -- Sanitize any API keys in error messages
                 error_msg = error_msg:gsub("Bearer%s+[%w%-_]+", "Bearer [REDACTED]")
-                vim.schedule(function() callback("curl error: " .. error_msg, nil) end)
+                local trimmed_msg = vim.trim(error_msg)
+                if trimmed_msg ~= "" then
+                    vim.schedule(function() callback("curl error: " .. trimmed_msg, nil) end)
+                end
             end
         end,
         on_exit = function(_, exit_code)
