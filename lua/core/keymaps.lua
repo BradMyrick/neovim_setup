@@ -59,49 +59,20 @@ map('n', '<leader><leader><leader>', [[<C-^>]], opts)
 
 -- show error --
 map('n', '<leader>0', vim.diagnostic.open_float, { desc = 'Show diagnostic under cursor' })
+map('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous Diagnostic' })
+map('n', ']d', vim.diagnostic.goto_next, { desc = 'Next Diagnostic' })
 
-
--- LocalNest (AI) keymaps
-local localnest_chat = require("localnest.chat")
-local localnest_fim  = require("localnest.fim")
-local localnest_backend = require("localnest.backend")
-
--- FIM: inline completion (Insert mode)
-map("i", "<C-x>", function()
-  localnest_fim.toggle()
-end, vim.tbl_extend("force", opts, { desc = "LocalNest: Toggle FIM" }))
-
-map("i", "<C-z>", function()
-  localnest_fim.accept()
-end, vim.tbl_extend("force", opts, { desc = "LocalNest: Accept FIM" }))
-
-map("i", "<C-d>", function()
-  localnest_fim.dismiss()
-end, vim.tbl_extend("force", opts, { desc = "LocalNest: Dismiss FIM" }))
-
--- Grouped AI Commands (Leader and Ctrl-O)
 local wk = require("which-key")
 
 wk.add({
-  { "<leader>a", group = "AI (LocalNest)" },
-  -- Backend Switching
-  { "<leader>ab", function()
-    vim.ui.select(
-      { "local", "deepseek" },
-      { prompt = "Select AI Backend (Current: " .. localnest_backend.get_current_backend_name() .. "):" },
-      function(choice)
-        if choice then
-          localnest_backend.switch_backend(choice)
-        end
-      end
-    )
-  end, desc = "Switch Backend" },
-  -- Slash Commands
-  { "<leader>ae", function() localnest_chat.slash("explain") end, desc = "Explain Code" },
-  { "<leader>af", function() localnest_chat.slash("fix") end, desc = "Fix Code" },
-  { "<leader>ar", function() localnest_chat.slash("refactor") end, desc = "Refactor Code" },
-  { "<leader>at", function() localnest_chat.slash("test") end, desc = "Generate Tests" },
-  
+  -- Trouble Keymaps
+  { "<leader>x", group = "Trouble" },
+  { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Diagnostics (Trouble)" },
+  { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Buffer Diagnostics (Trouble)" },
+  { "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", desc = "Symbols (Trouble)" },
+  { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", desc = "Quickfix List (Trouble)" },
+
+
   -- DAP Keymaps (User version)
   { "<leader>d", group = "Debug" },
   { "<leader>db", function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
@@ -126,16 +97,4 @@ wk.add({
   { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
   { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
   { "gt", vim.lsp.buf.type_definition, desc = "Go to Type Definition" },
-
-  -- Chat Commands
-  { "<C-o>", group = "AI Chat" },
-  { "<C-o>c", function()
-    vim.ui.input({ prompt = "Chat with LocalNest: " }, function(input)
-      if input and input ~= "" then localnest_chat.ask(input) end
-    end)
-  end, desc = "Open Chat" },
-  { "<C-o>x", function() localnest_chat.ask_on_selection() end, desc = "Ask about Selection" },
-  { "<C-o>f", function() localnest_chat.ask_on_file() end, desc = "Analyze File" },
-  { "<C-o>t", function() localnest_chat.ask_inline() end, desc = "Ask via @this block" },
 })
-

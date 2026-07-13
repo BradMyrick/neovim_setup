@@ -1,6 +1,9 @@
 -- lua/plugins/lsp.lua
 -- Unified native LSP config (Neovim 0.11+)
 
+-- Disable LSP logging to prevent lsp.log from filling up disk
+vim.lsp.set_log_level("off")
+
 ---------------------------------------------------------------
 -- Dependencies
 ---------------------------------------------------------------

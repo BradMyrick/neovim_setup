@@ -35,8 +35,7 @@ require("lazy").setup({
     "nvim-lua/popup.nvim",
     -- Snippet engine
     'hrsh7th/vim-vsnip',
-    -- Adds extra functionality over rust analyzer
-    "simrat39/rust-tools.nvim",
+
 
     -- Go development
     {
@@ -181,12 +180,5 @@ require("lazy").setup({
             "rouge8/neotest-rust",
             "nvim-neotest/neotest-python",
         }
-    },
-
-    {
-        dir = vim.fn.stdpath('config') .. '/lua/localnest',
-        config = function()
-            require('localnest').setup({})
-        end,
     },
 })

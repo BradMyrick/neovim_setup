@@ -26,7 +26,6 @@ vim.schedule(function()
     require('plugins.aerial')
     require('plugins.bufferline')
     require('plugins.neotest')
-    require('plugins.localnest')
     -- Theme
     vim.cmd [[colorscheme tokyonight]]
     vim.cmd [[highlight Normal ctermfg=white ctermbg=black]]

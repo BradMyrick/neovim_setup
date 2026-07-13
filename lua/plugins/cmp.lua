@@ -19,16 +19,11 @@ cmp.setup({
     }),
   }),
   sources = cmp.config.sources({
-    { name = 'localnest' },  -- LocalNest AI source
     { name = 'nvim_lsp' },
     { name = 'vsnip' },
     { name = 'path' },
     { name = 'buffer' },
   }),
-  performance = {
-    -- recommended to avoid timeouts with LLM backends
-    fetching_timeout = 2000,
-  },
 })
 
 cmp.setup.filetype('capnp', {
