@@ -57,10 +57,21 @@ map('t', '<Esc>', [[<C-\><C-n>]], opts)      -- Close terminal from terminal mod
 -- Jump back to previous file
 map('n', '<leader><leader><leader>', [[<C-^>]], opts)
 
+-- Clear stale diagnostics and recheck
+map('n', '<leader>cl', function()
+  vim.diagnostic.reset(nil, 0)
+  vim.lsp.buf_request(0, "textDocument/diagnostic", { textDocument = vim.lsp.util.make_text_document_params() })
+end, { desc = 'Clear diagnostics & refresh' })
 -- show error --
 map('n', '<leader>0', vim.diagnostic.open_float, { desc = 'Show diagnostic under cursor' })
-map('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous Diagnostic' })
-map('n', ']d', vim.diagnostic.goto_next, { desc = 'Next Diagnostic' })
+-- Previous Diagnostic
+map('n', '[d', function()
+  vim.diagnostic.jump({ count = -1, float = true })
+end, { desc = 'Previous Diagnostic' })
+-- Next Diagnostic
+map('n', ']d', function()
+  vim.diagnostic.jump({ count = 1, float = true })
+end, { desc = 'Next Diagnostic' })   
 
 local wk = require("which-key")
 
