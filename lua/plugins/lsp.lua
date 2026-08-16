@@ -2,7 +2,7 @@
 -- Unified native LSP config (Neovim 0.11+)
 
 -- Disable LSP logging to prevent lsp.log from filling up disk
-vim.lsp.set_log_level("off")
+vim.lsp.log.set_level(vim.log.levels.OFF)
 
 ---------------------------------------------------------------
 -- Dependencies
@@ -78,6 +78,14 @@ vim.api.nvim_create_autocmd("BufWritePre", {
       async = false,
       timeout_ms = 1000,
     })
+  end,
+})
+
+-- Rust: clear stale diagnostics on save (rust-analyzer will re-publish after checkOnSave)
+vim.api.nvim_create_autocmd("BufWritePost", {
+  pattern = "*.rs",
+  callback = function(args)
+    vim.diagnostic.reset(nil, args.buf)
   end,
 })
 
