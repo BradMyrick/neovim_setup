@@ -8,7 +8,6 @@ vim.opt.smartindent = true
 vim.opt.termguicolors = true
 
 -- Performance improvements
-vim.opt.hidden = true
 vim.opt.history = 100
 vim.opt.lazyredraw = true
 vim.opt.updatetime = 300

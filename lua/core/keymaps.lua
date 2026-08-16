@@ -21,7 +21,6 @@ map('n', 'gd', vim.lsp.buf.definition, opts)
 map('n', 'gr', vim.lsp.buf.references, opts)
 map('n', '<leader>rn', vim.lsp.buf.rename, opts)
 map('n', 'K', vim.lsp.buf.hover, opts)
-map('n', '<leader>f', vim.lsp.buf.format, opts)
 
 -- Git (Fugitive)
 map('n', '<leader>gs', vim.cmd.Git, opts)
@@ -31,7 +30,6 @@ map('n', '<leader>gu', function() vim.cmd.Git('push') end, opts)
 map('n', '<leader>gc', function() vim.cmd.Git('commit') end, opts)
 
 -- Buffer management
-map('n', '<leader>q', vim.cmd.bdelete, opts)
 map('n', '<leader>n', vim.cmd.enew, opts)
 
 -- Buffer Navigation
@@ -98,14 +96,15 @@ wk.add({
   { "<leader>o", "<cmd>AerialToggle! left<CR>", desc = "Code Outline" },
 
   -- Neotest
-  { "<leader>t", group = "Test" },
-  { "<leader>tt", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
-  { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run Current File" },
-  { "<leader>ts", function() require("neotest").run.stop() end, desc = "Stop Test" },
-  { "<leader>to", function() require("neotest").output.open({ enter = true }) end, desc = "Show Output" },
+  { "<leader>T", group = "Test" },
+  { "<leader>Tt", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
+  { "<leader>Tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run Current File" },
+  { "<leader>Ts", function() require("neotest").run.stop() end, desc = "Stop Test" },
+  { "<leader>To", function() require("neotest").output.open({ enter = true }) end, desc = "Show Output" },
 
   -- LSP extensions
   { "gD", vim.lsp.buf.declaration, desc = "Go to Declaration" },
   { "gi", vim.lsp.buf.implementation, desc = "Go to Implementation" },
   { "gt", vim.lsp.buf.type_definition, desc = "Go to Type Definition" },
+  { "<leader>ca", vim.lsp.buf.code_action, desc = "Code Action" },
 })

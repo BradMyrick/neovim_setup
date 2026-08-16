@@ -10,30 +10,7 @@ vim.lsp.log.set_level(vim.log.levels.OFF)
 
 local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
----------------------------------------------------------------
--- Diagnostics
----------------------------------------------------------------
 
-vim.diagnostic.config({
-  virtual_text = {
-    prefix = "●",
-    source = "if_many",
-  },
-  float = {
-    source = true,
-    border = "rounded",
-  },
-  signs = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-})
-
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
-for type, icon in pairs(signs) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-end
 
 ---------------------------------------------------------------
 -- Shared capabilities + on_attach
@@ -66,40 +43,10 @@ local function root_with(markers)
 end
 
 ---------------------------------------------------------------
--- Format on save for supported languages
+-- Diagnostic refresh on save
 ---------------------------------------------------------------
 
--- Rust: format on save
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*.rs",
-  callback = function(args)
-    vim.lsp.buf.format({
-      bufnr = args.buf,
-      async = false,
-      timeout_ms = 1000,
-    })
-  end,
-})
 
--- Rust: clear stale diagnostics on save (rust-analyzer will re-publish after checkOnSave)
-vim.api.nvim_create_autocmd("BufWritePost", {
-  pattern = "*.rs",
-  callback = function(args)
-    vim.diagnostic.reset(nil, args.buf)
-  end,
-})
-
--- JSON: format on save
-vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.json", "*.jsonc" },
-  callback = function(args)
-    vim.lsp.buf.format({
-      bufnr = args.buf,
-      async = false,
-      timeout_ms = 1000,
-    })
-  end,
-})
 
 ---------------------------------------------------------------
 -- LSP servers (vim.lsp.config / vim.lsp.enable)
@@ -278,7 +225,7 @@ vim.lsp.config("jsonls", {
 })
 vim.lsp.enable("jsonls")
 
--- Rust (rust-analyzer)
+-- Rust (rust-analyzer, managed by rustup so it always matches the toolchain)
 vim.lsp.config("rust_analyzer", {
   on_attach = on_attach,
   capabilities = capabilities,
@@ -287,14 +234,35 @@ vim.lsp.config("rust_analyzer", {
   root_dir = root_with({ "Cargo.toml", "rust-project.json", ".git" }),
   settings = {
     ["rust-analyzer"] = {
-      checkOnSave = true,
+      checkOnSave = { enable = true },
+      check = {
+        command = "check",
+      },
       imports = { granularity = { group = "module" } },
-      cargo = { buildScripts = { enable = true } },
+      cargo = {
+        autoreload = true,
+        buildScripts = { enable = true },
+      },
       procMacro = { enable = true },
     },
   },
 })
 vim.lsp.enable("rust_analyzer")
+
+-- Reload rust-analyzer's workspace when the crate manifest changes, so newly
+-- added dependencies get indexed instead of surfacing spurious
+-- `unresolved-reference` diagnostics on external crate symbols.
+local function reload_rust_workspace()
+  for _, client in ipairs(vim.lsp.get_clients({ name = "rust_analyzer" })) do
+    client.request("rust-analyzer/reloadWorkspace", nil, function() end, 0)
+  end
+end
+
+vim.api.nvim_create_autocmd("BufWritePost", {
+  group = vim.api.nvim_create_augroup("RustAnalyzerAutoReload", { clear = true }),
+  pattern = { "Cargo.toml", "Cargo.lock", "rust-project.json" },
+  callback = reload_rust_workspace,
+})
 
 ---------------------------------------------------------------
 -- Cap'n Proto: filetype + capnp_ls
@@ -318,3 +286,83 @@ vim.lsp.config("capnp_ls", {
   },
 })
 vim.lsp.enable("capnp_ls")
+
+---------------------------------------------------------------
+-- Markdown (marksman)
+---------------------------------------------------------------
+vim.lsp.config("marksman", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "marksman", "server" },
+  filetypes = { "markdown", "markdown.mdx" },
+  root_dir = root_with({ ".git", ".marksman.toml" }),
+})
+vim.lsp.enable("marksman")
+
+---------------------------------------------------------------
+-- C / C++ (clangd)
+---------------------------------------------------------------
+vim.lsp.config("clangd", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "clangd" },
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+  root_dir = root_with({
+    ".clangd",
+    ".clang-format",
+    "compile_commands.json",
+    "compile_flags.txt",
+    "configure.ac",
+    ".git",
+  }),
+})
+vim.lsp.enable("clangd")
+
+---------------------------------------------------------------
+-- HTML (html)
+---------------------------------------------------------------
+vim.lsp.config("html", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "vscode-html-language-server", "--stdio" },
+  filetypes = { "html", "temple" },
+  root_dir = root_with({ ".git" }),
+})
+vim.lsp.enable("html")
+
+---------------------------------------------------------------
+-- CSS (cssls)
+---------------------------------------------------------------
+vim.lsp.config("cssls", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "vscode-css-language-server", "--stdio" },
+  filetypes = { "css", "scss", "less" },
+  root_dir = root_with({ ".git" }),
+})
+vim.lsp.enable("cssls")
+
+---------------------------------------------------------------
+-- TOML (taplo)
+---------------------------------------------------------------
+vim.lsp.config("taplo", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "taplo", "lsp", "stdio" },
+  filetypes = { "toml" },
+  root_dir = root_with({ ".git" }),
+})
+vim.lsp.enable("taplo")
+
+---------------------------------------------------------------
+-- SQL (sqlls)
+---------------------------------------------------------------
+vim.lsp.config("sqlls", {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  cmd = { "sql-language-server", "up", "--method", "stdio" },
+  filetypes = { "sql", "mysql" },
+  root_dir = root_with({ ".git" }),
+})
+vim.lsp.enable("sqlls")
+

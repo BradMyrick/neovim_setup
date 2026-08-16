@@ -6,11 +6,6 @@ require('core.options')
 require('core.plugins')
 require('core.keymaps')
 
-
--- TEMP: mute Neovim deprecation spam from old plugins (rust-tools, null-ls, etc.)
---vim.deprecate = function() end
-
-
 -- Load plugin configurations AFTER plugins are loaded
 
 vim.schedule(function()
@@ -21,14 +16,13 @@ vim.schedule(function()
     require('plugins.lsp')
     require('plugins.telescope')
     require('plugins.treesitter')
-    require('plugins.mason')
     require('plugins.dap')
     require('plugins.aerial')
     require('plugins.bufferline')
     require('plugins.neotest')
+    require('plugins.conform')
     -- Theme
     vim.cmd [[colorscheme tokyonight]]
-    vim.cmd [[highlight Normal ctermfg=white ctermbg=black]]
 end)
 
 vim.opt.clipboard = "unnamedplus"

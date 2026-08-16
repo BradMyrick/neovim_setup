@@ -32,7 +32,6 @@ require("lazy").setup({
         dependencies = { "hrsh7th/nvim-cmp" },
     },
 
-    "nvim-lua/popup.nvim",
     -- Snippet engine
     'hrsh7th/vim-vsnip',
 
@@ -95,7 +94,6 @@ require("lazy").setup({
             require('plugins.dashboard')
         end
     },
-    'lvimuser/lsp-inlayhints.nvim',
     'folke/tokyonight.nvim',
 
     -- Additional productivity plugins
@@ -130,19 +128,30 @@ require("lazy").setup({
     },
 
     -- Formatting
-    'jose-elias-alvarez/null-ls.nvim',
+    'stevearc/conform.nvim',
+
+    -- Project manager (powers Telescope `projects` picker)
+    {
+        'ahmedkhalf/project.nvim',
+        config = function()
+            require('project_nvim').setup({
+                patterns = { '.git', 'Cargo.toml', 'go.mod', 'package.json' },
+            })
+        end,
+    },
+
+    -- Render Markdown for human reading
+    {
+        'MeanderingProgrammer/render-markdown.nvim',
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
+        ft = { 'markdown' },
+    },
 
     -- Better surround
     'kylechui/nvim-surround',
 
     -- Smooth scrolling
     'karb94/neoscroll.nvim',
-
-    -- Mason for tool management
-    {
-        "williamboman/mason.nvim",
-        dependencies = { "williamboman/mason-lspconfig.nvim" },
-    },
 
     -- DAP (Debugger)
     {

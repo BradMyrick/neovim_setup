@@ -14,4 +14,5 @@ require('telescope').setup {
   
   -- Load Telescope extensions
   require('telescope').load_extension('fzf')
+  require('telescope').load_extension('projects')
   
